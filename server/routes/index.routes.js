@@ -5,6 +5,7 @@ const Review = require('../models/Review.model');
 const User = require('../models/User.model');
 const Notification = require('../models/Notification.model');
 const Deck = require('../models/Deck.model');
+const { formatDistanceToNow } = require('date-fns');
 
 // Middleware to check if the user is logged in
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
@@ -93,6 +94,25 @@ router.get("/search", async (req, res) => {
 //================//
 // NOTIFICATIONS
 //================//
+
+// Get existing notifications
+router.get("/notifications", isAuthenticated, async (req, res, next) => {
+  const userId = req.payload._id
+  try {
+    if (userId) {
+      const notifications = await Notification.find({ target: userId }).sort({ createdAt: -1 }).populate('source')
+      notifications.forEach(notif => {
+        notif.timeDiff = formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })
+      })
+      
+      const unread = notifications.filter(n => !n.read).length
+      
+      res.status(200).json({ notifications, unread });
+    }
+  } catch (error) {
+    next(err);
+  }
+});
 
 // Mark a notification as read
 router.post("/notification/read", isAuthenticated, async (req, res) => {

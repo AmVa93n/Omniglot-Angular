@@ -1,0 +1,77 @@
+<nav class="navbar navbar-expand bg-light py-1" style="box-shadow:rgba(0, 0, 0, 0.5) 0px 1px 6px 0px;z-index:3">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><img src="/images/logo.png" width="200px"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            
+            <!-- create a child to the search form -->
+
+            <div class="container">
+                <div class="row g-0 justify-content-center">
+                    <div class="col-md-6 col-lg-4 g-0">
+                        <form id="searchForm" class="d-flex position-relative" role="search">
+                            <input id="search" class="form-control rounded-pill" type="search" placeholder="Search" aria-label="Search">
+                            <i class="bi bi-search position-absolute" style="top:30%; right:5%"></i>
+                            <ul id="results" class="list-group mt-3" style="width: 100%;"></ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <a *ngIf="user" href="/match/partners" class="nav-link d-flex flex-column align-items-center me-4"><i class="bi bi-chat-text-fill mb-1 fs-3"></i>Partners</a>
+        <a *ngIf="user" href="/match/teachers" class="nav-link d-flex flex-column align-items-center me-4"><i class="bi bi-mortarboard-fill mb-1 fs-3"></i>Teachers</a>
+        
+        <div *ngIf="user" class="dropdown-center">
+
+            <button class="dropdown-toggle no-arrow" data-bs-toggle="dropdown">
+                <div class="nav-link btn d-flex flex-column align-items-center me-4 mt-1">
+                    <div style="width: fit-content;position: relative"><i class="bi bi-bell-fill mb-1 fs-3"></i>
+                        <span id="unreadCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" [style.display]="unread > 0 ? 'block' : 'none'">{{unread}}</span>
+                    </div>Notifications
+                </div>
+            </button>
+
+            <app-notifications></app-notifications>
+        </div>
+
+        <div class="navbar-nav d-flex align-items-center">
+            
+            <div *ngIf="user" class="dropdown-center">
+                <button class="dropdown-toggle no-arrow" data-bs-toggle="dropdown">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="circle-crop nav-item" style="width:50px; height:50px; display:inline-flex">
+                            <img [src]="user.profilePic ? user.profilePic : '/images/Profile-PNG-File.png'">
+                        </div>
+                    </div>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item d-flex gap-2 align-items-center" href="/account/profile"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item d-flex gap-2 align-items-center" href="/account/inbox"><i class="bi bi-inbox-fill me-2"></i>Inbox</a></li>
+                    <li><a class="dropdown-item d-flex gap-2 align-items-center" href="/account/classes"><i class="bi bi-easel3-fill me-2"></i>Classes</a></li>
+                    <li><a class="dropdown-item d-flex gap-2 align-items-center" href="/account/decks"><i class="bi bi-stack me-2"></i>Decks</a></li>
+                    
+                    <li *ngIf="user.professional"><hr class="dropdown-divider"></li>
+                    <li *ngIf="user.professional"><a class="dropdown-item d-flex gap-2 align-items-center" href="/account/offers"><i class="bi bi-clipboard2-fill me-2"></i>Offers</a></li>
+                    <li *ngIf="user.professional"><a class="dropdown-item d-flex gap-2 align-items-center" href="/account/calendar"><i class="bi bi-calendar-week me-2"></i>Calendar</a></li>
+                    <li *ngIf="user.professional"><a class="dropdown-item d-flex gap-2 align-items-center" href="/account/wallet"><i class="bi bi-cash-coin me-2"></i>Wallet</a></li>
+                    <li *ngIf="user.professional"><a class="dropdown-item d-flex gap-2 align-items-center" href="/account/reviews"><i class="bi bi-star-fill me-2"></i>Reviews</a></li>
+                    
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item dropdown-item-danger d-flex gap-2 align-items-center" href="/auth/logout" style="color: red;"><i class="bi bi-box-arrow-in-right me-2"></i>Logout</a></li>
+                </ul>
+            </div>
+        
+            <a *ngIf="!user" href="/auth/login">
+                <div class="circle-crop nav-item" style="width:50px; height:50px; display:inline-flex">  
+                    <img src="/images/Profile-PNG-File.png">    
+                </div>
+            </a>
+        
+        </div>
+    </div>
+</nav>

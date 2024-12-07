@@ -7,17 +7,20 @@ import { environment } from '../environments/environment';
 })
 export class AppService {
   private apiUrl = environment.apiUrl;
+  public notifications: object[] = []; // Shared state
+  public unread: number = 0; // Shared state
 
   constructor() { }
 
-  // Method to fetch data using async/await and Axios
   async getLanguageStats(): Promise<any> {
-    try {
-      const response: AxiosResponse = await axios.get(`${this.apiUrl}/api/langStats`);
-      return response.data; // Return the data from the response
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      throw error; // Rethrow the error for higher-level handling
-    }
+    const response: AxiosResponse = await axios.get(`${this.apiUrl}/api/langStats`);
+    return response.data;
+  }
+
+  async getNotifications(): Promise<any> {
+    const response: AxiosResponse = await axios.get(`${this.apiUrl}/api/notifications`);
+    const { notifications, unread } = response.data
+    this.notifications = notifications
+    this.unread = unread
   }
 }

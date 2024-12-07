@@ -1,0 +1,22 @@
+<ul *ngFor="let notif of notifications" class="dropdown-menu dropdown-menu-end" style="max-height: 400px; overflow-y:auto" id="notifList">
+
+    <li class="notif" id="{{notif._id}}">
+        <div class="dropdown-item gap-2 py-2 position-relative" (click)="readNotif(notif._id, notif.type)" [style.background-color]="!notif.read ? 'rgb(227, 242, 253)' : ''">
+        
+            <div class="d-flex align-items-center mb-1">
+                <div class="circle-crop nav-item me-1" style="width:25px;height:25px;display:inline-flex">
+                    <img [src]="notif.source.profilePic ? notif.source.profilePic : '/images/Profile-PNG-File.png'">
+                </div>
+                <span><span class="fw-bold">{{notif.source.username}}</span>
+                    {{getNotificationMessage(notif.type)}}
+                </span>
+            </div>
+            <small style="width: fit-content;" class="d-block ms-auto">{{notif.timeDiff}}</small>
+            <button class="btn position-absolute top-0 end-0 p-0" (click)="deleteNotif(notif._id, $event)">
+                <i class="bi bi-x"></i>
+            </button>
+    
+        </div>
+    </li>
+
+</ul>
