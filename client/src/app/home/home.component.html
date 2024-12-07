@@ -69,7 +69,7 @@
       
     <div class="col-auto mx-auto">
         <h4 class="mx-auto" style="width: fit-content;">Teaching</h4>
-        <ul class="list-group" *ngFor="let teachStat of stats.teach">
+        <ul class="list-group" *ngFor="let teachStat of stats?.teach">
             <a [routerLink]="'/teachers/' + teachStat.name" class="text-decoration-none">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
@@ -84,7 +84,7 @@
     
     <div class="col-auto mx-auto">
         <h4 class="mx-auto" style="width: fit-content;">Learning</h4>
-        <ul class="list-group" *ngFor="let learnStat of stats.learn">
+        <ul class="list-group" *ngFor="let learnStat of stats?.learn">
             <a [routerLink]="'/learners/' + learnStat.name" class="text-decoration-none">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>

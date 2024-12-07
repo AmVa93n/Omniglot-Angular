@@ -1,21 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppService } from '../../services/app.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
   stats: any;
 
-  constructor(private dataService: AppService) {}
+  constructor(private appService: AppService) {}
 
   async ngOnInit(): Promise<void> {
     try {
-      this.stats = await this.dataService.getLanguageStats();
+      this.stats = await this.appService.getLanguageStats();
     } catch (error) {
       console.error('Error fetching data in component:', error);
     }

@@ -11,30 +11,29 @@ const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
 router.get("/langStats", async (req, res, next) => {
     const langList = ['es', 'it', 'pt', 'fr', 'de', 'ru', 'nl', 'zh', 'hu', 'he', 'ar', 'kr', 'jp', 'ro', 'pl'];
-    const stats = {
-        teach: [],
-        learn: [],
-    };
+    
+    const teach = []
+    const learn = []
 
     try {
         // Collect statistics for each language
         for (const lang of langList) {
-        stats.teach.push({
-            name: lang,
-            amount: await User.countDocuments({ lang_teach: lang }),
-        });
-        stats.learn.push({
-            name: lang,
-            amount: await User.countDocuments({ lang_learn: lang }),
-        });
+          teach.push({
+              name: lang,
+              amount: await User.countDocuments({ lang_teach: lang }),
+          });
+          learn.push({
+              name: lang,
+              amount: await User.countDocuments({ lang_learn: lang }),
+          });
         }
 
         // Sort and limit the statistics to the top 10
-        stats.teach = stats.teach.sort((a, b) => b.amount - a.amount).slice(0, 10);
-        stats.learn = stats.learn.sort((a, b) => b.amount - a.amount).slice(0, 10);
+        const top10teach = teach.sort((a, b) => b.amount - a.amount).slice(0, 10);
+        const top10learn = learn.sort((a, b) => b.amount - a.amount).slice(0, 10);
         
         // Render the home page with statistics
-        res.status(200).json({ stats });
+        res.status(200).json({ teach: top10teach, learn: top10learn });
     } catch (error) {
         next(err); // In this case, we send error handling to the error handling middleware.
     }
