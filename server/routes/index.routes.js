@@ -41,13 +41,12 @@ router.get("/langStats", async (req, res, next) => {
 });
 
 // GET another user profile
-router.get("/users/:userId", async (req, res) => {
-  const user = req.session.currentUser;
+router.get("/users/:userId", async (req, res, next) => {
   const viewedUserId = decodeURIComponent(req.params.userId);
 
   try {
     // Find the user by ID and populate their offers
-    const viewedUser = await User.findById(viewedUserId).populate('offers');
+    const viewedUser = await User.findById(viewedUserId).populate('offers').lean();
     if (!viewedUser) {
       return res.status(404).render("error", { message: "User not found" });
     }
@@ -56,11 +55,9 @@ router.get("/users/:userId", async (req, res) => {
     viewedUser.reviews = await Review.find({ subject: viewedUserId }).populate('author');
     viewedUser.decks = await Deck.find({ creator: viewedUserId });
 
-    // Render the user profile page
-    res.render("user", { viewedUser, user });
+    res.status(200).json(viewedUser);
   } catch (error) {
-    console.error('Error fetching user profile:', error);
-    res.status(500).render("error", { message: "Internal Server Error" });
+    next(err);
   }
 });
 
@@ -113,7 +110,7 @@ router.get("/notifications", isAuthenticated, async (req, res, next) => {
 });
 
 // Mark a notification as read
-router.put("/notification/:notificationId", isAuthenticated, async (req, res, next) => {
+router.put("/notification/:notificationId", async (req, res, next) => {
   const notifId = req.params.notificationId;
   try {
     await Notification.findByIdAndUpdate(notifId, { read: true });
@@ -124,7 +121,7 @@ router.put("/notification/:notificationId", isAuthenticated, async (req, res, ne
 });
 
 // Delete a notification
-router.delete("/notification/:notificationId", isAuthenticated, async (req, res, next) => {
+router.delete("/notification/:notificationId", async (req, res, next) => {
   const notifId = req.params.notificationId;
   try {
     await Notification.findByIdAndDelete(notifId);
@@ -139,8 +136,9 @@ router.delete("/notification/:notificationId", isAuthenticated, async (req, res,
 //================//
 
 // Find users who match based on the languages they teach and learn
-router.get("/match/partners", isAuthenticated, async (req, res) => {
-  const user = req.session.currentUser;
+router.get("/match/partners", isAuthenticated, async (req, res, next) => {
+  const userId = req.payload._id
+  const user = await User.findById(userId);
   const user_teach = user.lang_teach;
   const user_learn = user.lang_learn;
 
@@ -151,20 +149,20 @@ router.get("/match/partners", isAuthenticated, async (req, res) => {
       match.lang_teach = match.lang_teach.filter(lang => user_learn.includes(lang));
       match.lang_learn = match.lang_learn.filter(lang => user_teach.includes(lang));
     }
-    res.render("matches", { user, matches, teachers: false });
+    res.status(200).json(matches);
   } catch (error) {
-    console.error('Error finding partners:', error);
-    res.status(500).render("error", { message: "Internal Server Error" });
+    next(err);
   }
 });
 
 // Find teachers who match based on the languages the user wants to learn
-router.get("/match/teachers", isAuthenticated, async (req, res) => {
-  const user = req.session.currentUser;
+router.get("/match/teachers", isAuthenticated, async (req, res, next) => {
+  const userId = req.payload._id
+  const user = await User.findById(userId);
   const user_learn = user.lang_learn;
 
   try {
-    let matches = await User.find({ lang_teach: { $in: user_learn }, professional: true }).populate('offers');
+    let matches = await User.find({ lang_teach: { $in: user_learn }, professional: true }).populate('offers').lean();
     for (let match of matches) { // Filter irrelevant languages
       match.lang_teach = match.lang_teach.filter(lang => user_learn.includes(lang));
     }
@@ -177,10 +175,9 @@ router.get("/match/teachers", isAuthenticated, async (req, res) => {
       match.ratingAvg = avg.toFixed(1);
       match.reviews = reviews.length;
     }
-    res.render("matches", { user, matches, teachers: true });
+    res.status(200).json(matches);
   } catch (error) {
-    console.error('Error finding teachers:', error);
-    res.status(500).render("error", { message: "Internal Server Error" });
+    next(err);
   }
 });
 

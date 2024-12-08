@@ -1,0 +1,58 @@
+<h4 class="center my-3">{{matches.length}} matches found</h4>
+<div class="d-flex flex-wrap mx-auto gap-3" style="width: 92%;">
+
+    <div *ngFor="let user of matches" class="user-card">
+        <a [routerLink]="'/users/' + user._id" class="link-text">
+        <div class="d-flex align-items-center mb-3 position-relative">
+            <div class="circle-crop me-2" style="width:50px;height:50px;display:inline-flex">
+                <img [src]="user.profilePic || '/images/Profile-PNG-File.png'">
+            </div>
+            <span class="fs-5">{{user.username}}</span>
+            <span class="userAgeCountry">
+                <span class="age">{{getUserAge(user.birthdate)}}</span>, {{user.country}}
+            </span>
+            
+            <span *ngIf="user.professional" class="badge rounded-pill text-bg-primary profBadge">Professional</span>
+            
+        </div></a>
+
+        <div class="row mb-2 align-items-center">
+            <span class="fw-bold col-auto" style="width: 125px;">{{ matchType === "teachers" ? 'Teaching' : 'Can teach'}}</span> 
+            <div class="col">
+                <div *ngFor="let lang of user.lang_teach" class="langWrapper">
+                    <img src="/images/{{lang}}.svg" class="lang-flag">
+                    <span class="lang-name me-1">{{getLanguageName(lang)}}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div *ngIf="matchType !== 'teachers'" class="row mb-2 align-items-center">
+            <span class="fw-bold col-auto" style="width: 125px;">Wants to learn</span>
+            <div class="col">
+                <div *ngFor="let lang of user.lang_learn" class="langWrapper">
+                    <img src="/images/{{lang}}.svg" class="lang-flag">
+                    <span class="lang-name me-1">{{getLanguageName(lang)}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="matchType === 'teachers'" class="row mb-2 align-items-center">
+            <span class="fw-bold col-auto" style="width: 125px;">Rating</span>
+            <div class="col">
+                <div *ngIf="user.reviews" class="mx-auto" style="width: fit-content;">{{user.ratingAvg}} <span style="color: #ffca08;">&#9733;</span></div>
+                <div class="mx-auto small" style="width: fit-content;">({{user.reviews}} Reviews)</div>
+            </div>
+        </div>
+
+        <div class="row mt-auto">
+            <div class="col d-flex justify-content-center align-items-end">
+                <form action="/account/inbox" method="POST">
+                    <input style="display: none;" value="{{user._id}}" name="targetUserId">
+                    <button type="submit" class="btn btn-primary mx-1"><i class="bi bi-envelope-fill me-1"></i>Message</button>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+
+</div>

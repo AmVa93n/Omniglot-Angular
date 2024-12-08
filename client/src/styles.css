@@ -64,9 +64,21 @@ body {
   .no-arrow::after {
     display: none;
   }
+
+  .langWrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
   
   .lang-flag {
     width: 20px;
+  }
+
+  .addedIconWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   
   .link-text {

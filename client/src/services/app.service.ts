@@ -44,4 +44,14 @@ export class AppService {
     const response: AxiosResponse = await this.api.delete(`/api/notification/${notificationId}`);
     return response.data;
   }
+
+  async getMatches(matchType: string) {
+    const response: AxiosResponse = await this.api.get(`/api/match/${matchType}`);
+    return response.data;
+  }
+
+  async getUser(userId: string) {
+    const response: AxiosResponse = await this.api.get(`/api/users/${userId}`);
+    return response.data;
+  }
 }
