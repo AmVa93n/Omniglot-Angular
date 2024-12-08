@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      await this.authService.verify(); // Fetch the data
+      await this.authService.authenticateUser(); // Fetch the data
       await this.appService.getNotifications();
     } catch (error) {
       console.error('Error during app initialization:', error);

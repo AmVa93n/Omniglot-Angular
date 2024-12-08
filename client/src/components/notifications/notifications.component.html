@@ -1,6 +1,6 @@
-<ul *ngFor="let notif of notifications" class="dropdown-menu dropdown-menu-end" style="max-height: 400px; overflow-y:auto" id="notifList">
+<ul class="dropdown-menu dropdown-menu-end" style="max-height: 400px; overflow-y:auto" id="notifList">
 
-    <li class="notif" id="{{notif._id}}">
+    <li *ngFor="let notif of notifications" class="notif" id="{{notif._id}}">
         <div class="dropdown-item gap-2 py-2 position-relative" (click)="readNotif(notif._id, notif.type)" [style.background-color]="!notif.read ? 'rgb(227, 242, 253)' : ''">
         
             <div class="d-flex align-items-center mb-1">

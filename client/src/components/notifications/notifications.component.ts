@@ -10,19 +10,14 @@ import { CommonModule } from '@angular/common';
 })
 export class NotificationsComponent implements OnInit {
   notifications: any;
-  unread: any;
 
   constructor(private appService: AppService) {}
 
   ngOnInit(): void {
-    this.notifications = this.appService.notifications; // Access the shared data
-    this.unread = this.appService.unread
+    this.appService.notifications$.subscribe((notifications) => {
+      this.notifications = notifications; // Update the notifications when it's available
+    });
   }
-
-  //const notifList = document.getElementById('notifList')
-  //const unreadCount = document.getElementById("unreadCount")
-  //if (unreadCount.innerText > 0) unreadCount.style.display = 'block'
-  //updateNotifBorder()
 
   getNotificationMessage(type: string) {
     const messages: { [key: string]: string } = {
@@ -45,7 +40,6 @@ export class NotificationsComponent implements OnInit {
 
   createNotif(notifData: any) {
       this.notifications.unshift(notifData)
-      this.unread ++
       this.updateNotifBorder()
   }
 
@@ -65,25 +59,28 @@ export class NotificationsComponent implements OnInit {
           case "reschedule-teacher-decline":
           case "reschedule-teacher-pending": redirectUrl = '/account/classes' ;break
       }
-      const response = await fetch('/notification/read', {
-          method: 'POST',
-          headers: {
-          'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ notifId }),
-      });
-      if (response.ok) window.location.href = `${redirectUrl}`;
+      try {
+        await this.appService.readNotification(notifId)
+        const notifToUpdate = this.notifications.find((n: { _id: string; }) => n._id === notifId)
+        notifToUpdate.read = true
+        window.location.href = `${redirectUrl}`;
+      } catch (error) {
+        console.log(error)
+      }
   }
 
   async deleteNotif(notifId: string, event: Event) {
       event.stopPropagation();
-      await fetch('/notification/delete', {
-          method: 'POST',
-          headers: {
-          'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ notifId }),
-      });
+      try {
+        await this.appService.deleteNotification(notifId)
+        const notifToDelete = this.notifications.find((n: { _id: string; }) => n._id === notifId)
+        const index = this.notifications.indexOf(notifToDelete)
+        this.notifications.splice(index, 1)
+      } catch (error) {
+        console.log(error)
+      }
+      
+      
   }
 
   updateNotifBorder() {

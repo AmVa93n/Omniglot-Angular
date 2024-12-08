@@ -100,14 +100,12 @@ router.get("/notifications", isAuthenticated, async (req, res, next) => {
   const userId = req.payload._id
   try {
     if (userId) {
-      const notifications = await Notification.find({ target: userId }).sort({ createdAt: -1 }).populate('source')
+      const notifications = await Notification.find({ target: userId }).sort({ createdAt: -1 }).populate('source').lean()
       notifications.forEach(notif => {
         notif.timeDiff = formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })
       })
       
-      const unread = notifications.filter(n => !n.read).length
-      
-      res.status(200).json({ notifications, unread });
+      res.status(200).json(notifications);
     }
   } catch (error) {
     next(err);
@@ -115,26 +113,24 @@ router.get("/notifications", isAuthenticated, async (req, res, next) => {
 });
 
 // Mark a notification as read
-router.post("/notification/read", isAuthenticated, async (req, res) => {
-  const { notifId } = req.body;
+router.put("/notification/:notificationId", isAuthenticated, async (req, res, next) => {
+  const notifId = req.params.notificationId;
   try {
     await Notification.findByIdAndUpdate(notifId, { read: true });
     res.status(200).send();
   } catch (error) {
-    console.error('Error marking notification as read:', error);
-    res.status(500).send('Internal Server Error');
+    next(err);
   }
 });
 
 // Delete a notification
-router.post("/notification/delete", isAuthenticated, async (req, res) => {
-  const { notifId } = req.body;
+router.delete("/notification/:notificationId", isAuthenticated, async (req, res, next) => {
+  const notifId = req.params.notificationId;
   try {
     await Notification.findByIdAndDelete(notifId);
     res.status(200).send();
   } catch (error) {
-    console.error('Error deleting notification:', error);
-    res.status(500).send('Internal Server Error');
+    next(err);
   }
 });
 
