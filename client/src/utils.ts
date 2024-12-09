@@ -2,7 +2,7 @@ export function getLanguageName(langCode: string) {
     return langCode ? langList[langCode] : '';
 }
 
-const langList: Record<string, string> = {
+export const langList: Record<string, string> = {
   es: 'Spanish',
   it: 'Italian',
   pt: 'Portuguese',

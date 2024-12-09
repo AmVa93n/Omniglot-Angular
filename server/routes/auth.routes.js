@@ -17,14 +17,11 @@ const saltRounds = 10;
 
 // POST /auth/signup  - Creates a new user in the database
 router.post("/signup", fileUploader.single("profilePic"), async (req, res, next) => {
-  const { email, password, name, gender, birthdate, country } = req.body;
+  console.log(req.body)
+  const { email, password, username, gender, birthdate, country, lang_teach, lang_learn, professional, private } = req.body;
   const profilePic = req.file ? req.file.path : null
-
-  // Check if email or password or name are provided as empty strings
-  if (email === "" || password === "" || name === "") {
-    res.status(400).json({ message: "Provide email, password and name" });
-    return;
-  }
+  const isPrivate = !!private
+  const isProfessional = !!professional
 
   // This regular expression check that the email is of a valid format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -59,10 +56,11 @@ router.post("/signup", fileUploader.single("profilePic"), async (req, res, next)
   try {
     // Create the new user in the database
     // We return a pending promise, which allows us to chain another `then`
-    const createdUser = await User.create({ email, password: hashedPassword, name, gender, birthdate, country, profilePic });
+    const createdUser = await User.create({ email, password: hashedPassword, username, gender, birthdate, country, profilePic, 
+      lang_teach, lang_learn, private: isPrivate, professional: isProfessional, chats: [], offers: [] });
     
     // Create a new object that doesn't expose the password
-    const user = { email, name, profilePic, _id: createdUser._id };
+    const user = { email, username, profilePic, _id: createdUser._id };
 
     // Send a json response containing the user object
     res.status(201).json({ user: user });
@@ -125,49 +123,6 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
 
   // Send back the token payload object containing the user data
   res.status(200).json(req.payload);
-});
-
-router.post('/google', async (req, res) => {
-  const { idToken } = req.body;
-
-  try {
-    // Verify the token
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-
-    const payload = ticket.getPayload();
-    const googleId = payload.sub;
-
-    // Check if a user with the same email already exists
-    let user = await User.findOne({ email: payload.email, googleId: null })
-    if (user) {
-      res.status(400).json({ message: "You've already signed up with your Google email address. Please log in with email and password" });
-      return;
-    }
-
-    // Check if a user already signed up with google
-    user = await User.findOne({ googleId });
-    if (!user) {
-      user = await User.create({ googleId, email: payload.email, name: payload.name, profilePic: payload.picture });
-    }
-
-    // Create a JSON Web Token and sign it
-    const { _id, email, name, profilePic } = user
-    const tokenPayload = { _id, email, name, profilePic };
-    const authToken = jwt.sign(tokenPayload, process.env.TOKEN_SECRET, {
-      algorithm: "HS256",
-      expiresIn: "7d",
-    });
-
-    // Send the token as the response
-    res.status(200).json({ authToken: authToken });
-
-  } catch (error) {
-    console.error(error);
-    res.status(401).json({ error: 'Unable to authenticate the user' });
-  }
 });
 
 module.exports = router;
