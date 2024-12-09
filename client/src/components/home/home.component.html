@@ -70,11 +70,11 @@
     <div class="col-auto mx-auto">
         <h4 class="mx-auto" style="width: fit-content;">Teaching</h4>
         <ul class="list-group" *ngFor="let teachStat of stats?.teach">
-            <a [routerLink]="'/teachers/' + teachStat.name" class="text-decoration-none">
+            <a [routerLink]="'/users/teachers/' + teachStat.name" class="text-decoration-none">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <img [src]="'/images/' + teachStat.name + '.svg'" class="lang-flag me-2">
-                        <span class="lang-name">{{ teachStat.name }}</span>
+                    <div class="langWrapper">
+                        <img [src]="'/images/' + teachStat.name + '.svg'" class="lang-flag">
+                        <span class="lang-name">{{ getLanguageName(teachStat.name) }}</span>
                     </div>
                     <span class="badge bg-primary rounded-pill ms-5">{{ teachStat.amount }} Users</span>
                 </li>
@@ -85,11 +85,11 @@
     <div class="col-auto mx-auto">
         <h4 class="mx-auto" style="width: fit-content;">Learning</h4>
         <ul class="list-group" *ngFor="let learnStat of stats?.learn">
-            <a [routerLink]="'/learners/' + learnStat.name" class="text-decoration-none">
+            <a [routerLink]="'/users/learners/' + learnStat.name" class="text-decoration-none">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <img [src]="'/images/' + learnStat.name + '.svg'" class="lang-flag me-2">
-                        <span class="lang-name">{{ learnStat.name }}</span>
+                    <div class="langWrapper">
+                        <img [src]="'/images/' + learnStat.name + '.svg'" class="lang-flag">
+                        <span class="lang-name">{{ getLanguageName(learnStat.name) }}</span>
                     </div>
                     <span class="badge bg-primary rounded-pill ms-5">{{ learnStat.amount }} Users</span>
                 </li>

@@ -186,32 +186,28 @@ router.get("/match/teachers", isAuthenticated, async (req, res, next) => {
 //==============================//
 
 // Route to get teachers of a specific language
-router.get("/teachers/:langId", async (req, res) => {
+router.get("/teachers/:langId", async (req, res, next) => {
   const { langId } = req.params;
 
   try {
-    const user = req.session.currentUser;
     // Find teachers for the specified language
     const teachers = await User.find({ lang_teach: langId});
-    res.render("matches", { lang: langId, matches: teachers, user});
+    res.status(200).json(teachers);
   } catch (error) {
-    console.error('Error fetching teachers:', error);
-    res.status(500).send('Internal Server Error');
+    next(err);
   }
 });
 
 // Route to get learners of a specific language
-router.get("/learners/:langId", async (req, res) => {
+router.get("/learners/:langId", async (req, res, next) => {
   const { langId } = req.params;
 
   try {
-    const user = req.session.currentUser;
     // Find learners for the specified language
     const learners = await User.find({ lang_learn: langId });
-    res.render("matches", { lang: langId, matches: learners, user, teachers: false });
+    res.status(200).json(learners);
   } catch (error) {
-    console.error('Error fetching learners:', error);
-    res.status(500).send('Internal Server Error');
+    next(err);
   }
 });
 

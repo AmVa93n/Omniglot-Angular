@@ -50,6 +50,16 @@ export class AppService {
     return response.data;
   }
 
+  async getLearners(langId: string) {
+    const response: AxiosResponse = await this.api.get(`/api/learners/${langId}`);
+    return response.data;
+  }
+
+  async getTeachers(langId: string) {
+    const response: AxiosResponse = await this.api.get(`/api/teachers/${langId}`);
+    return response.data;
+  }
+
   async getUser(userId: string) {
     const response: AxiosResponse = await this.api.get(`/api/users/${userId}`);
     return response.data;

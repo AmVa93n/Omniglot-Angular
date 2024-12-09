@@ -96,10 +96,14 @@
     
               <div class="row mb-2">
                   <span class="card-text col"> 
-                    <img src="/images/{{deck.language}}.svg" class="lang-flag">
-                    <span class="lang-name">{{deck.language}}</span>
+                    <div class="langWrapper">
+                      <img src="/images/{{deck.language}}.svg" class="lang-flag">
+                      <span class="lang-name">{{getLanguageName(deck.language)}}</span>
+                    </div>
                   </span>
-                  <span class="card-text col stylize">{{deck.level}}</span>
+                  <span class="card-text col addedIconWrapper">
+                    <i [class]="'bi ' + getIcon(deck.level)"></i>{{stylizeText(deck.level)}}
+                  </span>
               </div>
     
               <div class="row mb-3">

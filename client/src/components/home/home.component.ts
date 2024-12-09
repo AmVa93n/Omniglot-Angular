@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppService } from '../../services/app.service';
 import { CommonModule } from '@angular/common';
+import { getLanguageName } from '../../utils';
 
 @Component({
   selector: 'app-home',
@@ -11,6 +12,7 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeComponent implements OnInit {
   stats: any;
+  getLanguageName = getLanguageName
 
   constructor(private appService: AppService) {}
 
