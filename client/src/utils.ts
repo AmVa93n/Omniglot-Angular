@@ -1,8 +1,8 @@
-export function getLanguageName(langCode: string) {
+function getLanguageName(langCode: string) {
     return langCode ? langList[langCode] : '';
 }
 
-export const langList: Record<string, string> = {
+const langList: Record<string, string> = {
   es: 'Spanish',
   it: 'Italian',
   pt: 'Portuguese',
@@ -20,7 +20,7 @@ export const langList: Record<string, string> = {
   kr: 'Korean',
 };
 
-export function getUserAge(birthdate: string) {
+function getUserAge(birthdate: string) {
   const date = new Date(birthdate);
   const today = new Date();
 
@@ -35,7 +35,7 @@ export function getUserAge(birthdate: string) {
   return age;
 }
 
-export function stylizeText(plainText: string) {
+function stylizeText(plainText: string) {
   switch(plainText) {
     case "private": return 'Private'
     case "group": return 'Group'
@@ -49,7 +49,7 @@ export function stylizeText(plainText: string) {
   }
 }
 
-export function getIcon(plainText: string) {
+function getIcon(plainText: string) {
   switch(plainText) {
     case "private": return 'bi-person-fill'
     case "group": return 'bi-people-fill'
@@ -68,7 +68,7 @@ const months = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-export function formatDate(dateString: string) {
+function formatDate(dateString: string) {
   let date = new Date(dateString);
   
   const day = date.getUTCDate();
@@ -88,12 +88,22 @@ export function formatDate(dateString: string) {
   return `${day}${ordinalSuffix(day)} ${month} ${year}`;
 }
 
-export function drawStars(stars: number) {
+function drawStars(stars: number) {
   let string = ``
   for (let i= 1; i < stars+1; i++) {
     string += `&#9733;`
   }
   return string
+}
+
+export {
+  getLanguageName,
+  langList,
+  getUserAge,
+  stylizeText,
+  getIcon,
+  formatDate,
+  drawStars
 }
 
 /*

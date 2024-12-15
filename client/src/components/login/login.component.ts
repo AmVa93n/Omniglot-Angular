@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -13,7 +13,7 @@ export class LoginComponent {
   error: any
   account_created: any
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   async handleSubmit(event: Event) {
     event.preventDefault();
@@ -30,6 +30,7 @@ export class LoginComponent {
       // and at last navigate to the home page
       this.authService.storeToken(authToken);
       this.authService.authenticateUser();
+      this.router.navigate(['/']);
       
     } catch (error: any) {
       // If the request resolves with an error, set the error message in the state

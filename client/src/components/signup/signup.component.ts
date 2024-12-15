@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { getLanguageName, langList } from '../../utils';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -14,11 +15,12 @@ export class SignupComponent implements OnInit {
   getLanguageName = getLanguageName
   error = ''
   preview: any
+  file: File | null = null; // Store the file separately
   signupForm!: FormGroup;
   countries: { name: { common: string } }[] = [];
   languages = Object.keys(langList).sort((a, b) => langList[a].localeCompare(langList[b]));
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {}
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}
 
   async ngOnInit(): Promise<void> {
     // Initialize form
@@ -36,21 +38,23 @@ export class SignupComponent implements OnInit {
       private: [false]
     });
 
-    // Subscribe to changes in the 'professional' control
-    this.signupForm.get('professional')?.valueChanges.subscribe((value) => {
-      if (value) {
-        this.signupForm.get('private')?.disable();
+    // Subscribe to `professional` changes
+    this.signupForm.get('professional')?.valueChanges.subscribe((isProfessional: boolean) => {
+      if (isProfessional) {
+        this.signupForm.get('private')?.setValue(false, { emitEvent: false });
+        this.signupForm.get('private')?.disable({ emitEvent: false });
       } else {
-        this.signupForm.get('private')?.enable();
+        this.signupForm.get('private')?.enable({ emitEvent: false });
       }
     });
 
-    // Subscribe to changes in the 'private' control
-    this.signupForm.get('private')?.valueChanges.subscribe((value) => {
-      if (value) {
-        this.signupForm.get('professional')?.disable();
+    // Subscribe to `private` changes
+    this.signupForm.get('private')?.valueChanges.subscribe((isPrivate: boolean) => {
+      if (isPrivate) {
+        this.signupForm.get('professional')?.setValue(false, { emitEvent: false });
+        this.signupForm.get('professional')?.disable({ emitEvent: false });
       } else {
-        this.signupForm.get('professional')?.enable();
+        this.signupForm.get('professional')?.enable({ emitEvent: false });
       }
     });
 
@@ -89,6 +93,7 @@ export class SignupComponent implements OnInit {
   handleFileUpload(event: Event) {
     const file = (event.target as HTMLInputElement)?.files?.[0];
     if (file) {
+      this.file = file; // Save the File object
       const reader = new FileReader();
       reader.onload = () => {
         this.preview = reader.result;
@@ -97,20 +102,32 @@ export class SignupComponent implements OnInit {
     }
   }
 
-  handleSubmit(): void {
+  async handleSubmit(): Promise<void> {
     if (this.signupForm.valid) {
       try {
           const formData = new FormData();
           for (let key in this.signupForm.value) {
-            formData.append(key, this.signupForm.value[key])
+            if (key === 'profilePic') continue
+            const value = this.signupForm.value[key];
+            // Handle arrays: Append each element as a separate FormData entry
+            if (Array.isArray(value)) {
+              value.forEach((item, index) => {
+                formData.append(`${key}[${index}]`, item);
+              });
+            // Handle other data types
+            } else {
+              formData.append(key, value);
+            }
           }
-          this.authService.signup(formData)
+          if (this.file) formData.append('profilePic', this.file); // Add the actual file
+          await this.authService.signup(formData)
+          this.router.navigate(['/login']);
       } catch (error: any) {
           alert(error.response?.data?.message);
       }
       
     } else {
-      alert('Form is invalid');
+      alert('Some mandatory fields are missing');
     }
   }
 }

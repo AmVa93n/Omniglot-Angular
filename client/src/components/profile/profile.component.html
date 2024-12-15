@@ -1,0 +1,194 @@
+<div *ngIf="error" class="alert alert-danger d-flex align-items-center justify-content-center" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{error}}
+</div>
+
+<div class="content-box" style="width: 35%">
+    <h2 class="mb-3 center">My Profile</h2>
+    <form action="/account/profile/edit" method="POST" enctype="multipart/form-data">
+        <div class="position-relative">
+            <div class="mb-3 mx-auto circle-crop">
+                <img id="profile-pic-preview" [src]="user?.profilePic || '/images/Profile-PNG-File.png'">
+            </div>
+            <button type="button" id="edit-pfp-btn" class="btn btn-secondary btn-sm circle-btn editPfpBtn" (click)="editProfilePic">
+                <i class="bi bi-pencil-square"></i>
+            </button>
+        </div>
+
+      <div class="d-flex justify-content-center my-3">
+          <input type="file" id="pfp" name="pfp" style="display: none;" (change)="handleFileUpload($event)" />
+          <button type="button" class="btn btn-sm pfp-cancel d-none" (click)="handleCancel('pfp')"><i class="bi bi-x-circle-fill"></i></button>
+      </div>
+
+      <div class="row fs-6 mb-3 align-items-center">
+          <span class="col-4 fw-bold">Username</span>
+          <div class="col">
+            <span *ngIf="!editedFields.includes('username') else editUsername">{{user?.username}}</span>
+            <ng-template #editUsername>
+                <input class="form-control" type="text" name="username" [value]="user.username">
+            </ng-template>
+          </div>
+          <div class="col-3">
+            <button type="button" class="btn btn-sm" (click)="!editedFields.includes('username') ? handleEdit('username') : handleCancel('username')">
+                <i [class]="!editedFields.includes('username') ? 'bi bi-pencil-fill' : 'bi bi-x-circle-fill'"></i>
+            </button>
+
+            
+          </div>
+      </div>
+      
+      <div class="row fs-6 mb-3 align-items-center">
+          <span class="col-4 fw-bold">Email</span>
+          <div class="col">
+            <span *ngIf="!editedFields.includes('email') else editEmail">{{user?.email}}</span>
+            <ng-template #editEmail>
+                <input class="form-control" type="text" name="email" [value]="user.email">
+            </ng-template>
+          </div>
+          <div class="col-3">
+            <button type="button" class="btn btn-sm" (click)="!editedFields.includes('email') ? handleEdit('email') : handleCancel('email')">
+                <i [class]="!editedFields.includes('email') ? 'bi bi-pencil-fill' : 'bi bi-x-circle-fill'"></i>
+            </button>
+          </div>
+      </div>
+
+      <div class="row fs-6 mb-3 align-items-center">
+          <span class="col-4 fw-bold">Gender</span>
+          <div class="col">
+            <span *ngIf="!editedFields.includes('gender') else editGender">{{user?.gender}}</span>
+            <ng-template #editGender>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gender" id="male" value="male" [checked]="user.gender === 'male'">
+                    <label class="form-check-label me-2" for="male">Male</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gender" id="female" value="female" [checked]="user.gender === 'female'">
+                    <label class="form-check-label me-2" for="female">Female</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gender" id="other" value="other" [checked]="user.gender === 'other'">
+                    <label class="form-check-label me-2" for="other">Other</label>
+                  </div>
+            </ng-template>
+          </div>
+          <div class="col-3">
+            <button type="button" class="btn btn-sm" (click)="!editedFields.includes('gender') ? handleEdit('gender') : handleCancel('gender')">
+                <i [class]="!editedFields.includes('gender') ? 'bi bi-pencil-fill' : 'bi bi-x-circle-fill'"></i>
+            </button>
+          </div>
+      </div>
+
+      <div class="row fs-6 mb-3 align-items-center">
+          <span class="col-4 fw-bold">Birthdate</span>
+          <div class="col">
+            <span *ngIf="!editedFields.includes('birthdate') else editBirthdate">{{formatDate(user?.birthdate)}}</span>
+            <ng-template #editBirthdate>
+                <input class="form-control" type="date" name="birthdate" [value]="user.birthdate">
+            </ng-template>
+          </div>
+          <div class="col-3">
+            <button type="button" class="btn btn-sm" (click)="!editedFields.includes('birthdate') ? handleEdit('birthdate') : handleCancel('birthdate')">
+                <i [class]="!editedFields.includes('birthdate') ? 'bi bi-pencil-fill' : 'bi bi-x-circle-fill'"></i>
+            </button>
+          </div>
+      </div>
+
+      <div class="row fs-6 mb-4 align-items-center">
+          <span class="col-4 fw-bold">Country</span>
+          <div class="col">
+            <span *ngIf="!editedFields.includes('country') else editCountry">{{user?.country}}</span>
+            <ng-template #editCountry>
+                <select class="form-select" name="country">
+                    <option *ngFor="let country of countries" [value]="country.name.common" [selected]="country.name.common === user.country">{{country.name.common}}</option>
+                </select>
+            </ng-template>
+          </div>
+          <div class="col-3">
+            <button type="button" class="btn btn-sm" (click)="!editedFields.includes('country') ? handleEdit('country') : handleCancel('country')">
+                <i [class]="!editedFields.includes('country') ? 'bi bi-pencil-fill' : 'bi bi-x-circle-fill'"></i>
+            </button>
+          </div>
+      </div>
+
+      <div class="row fs-6 mb-2">
+          <p class="col-4 fw-bold">I want to teach</p>
+          <div class="col">
+            <div *ngIf="!editedFields.includes('teach') else editTeach">
+                <div *ngFor="let lang of user?.lang_teach" class="langWrapper">
+                  <img src="/images/{{lang}}.svg" class="lang-flag">
+                  <span class="lang-name">{{getLanguageName(lang)}}</span>
+                </div>
+            </div>
+            <ng-template #editTeach>
+                <div *ngFor="let lang of languages" class="form-check">
+                    <input class="form-check-input" type="checkbox" [value]="lang" [id]="'teach-' + lang" 
+                      [checked]="user.lang_teach.includes(lang)"
+                      [disabled]="editForm.get('lang_learn')?.value?.includes(lang)" 
+                      (change)="handleCheckbox(langTeach, lang, $event)">
+                    <label class="form-check-label langWrapper" [for]="'teach-' + lang"><img [src]="'/images/' + lang + '.svg'" class="lang-flag">{{getLanguageName(lang)}}</label>
+                </div>
+            </ng-template>
+          </div>
+          <div class="col-3">
+            <button type="button" class="btn btn-sm" (click)="!editedFields.includes('teach') ? handleEdit('teach') : handleCancel('teach')">
+                <i [class]="!editedFields.includes('teach') ? 'bi bi-pencil-fill' : 'bi bi-x-circle-fill'"></i>
+            </button>
+          </div>
+      </div>
+
+      <div class="row fs-6 mb-4">
+          <p class="col-4 fw-bold">I want to learn</p>
+          <div class="col">
+            <div *ngIf="!editedFields.includes('learn') else editLearn">
+                <div *ngFor="let lang of user?.lang_learn" class="langWrapper">
+                  <img src="/images/{{lang}}.svg" class="lang-flag">
+                  <span class="lang-name">{{getLanguageName(lang)}}</span>
+                </div>
+            </div>
+            <ng-template #editLearn>
+                <div *ngFor="let lang of languages" class="form-check">
+                    <input class="form-check-input" type="checkbox" [value]="lang" [id]="'learn-' + lang" 
+                      [checked]="user.lang_learn.includes(lang)"
+                      [disabled]="editForm.get('lang_teach')?.value?.includes(lang)" 
+                      (change)="handleCheckbox(langLearn, lang, $event)">
+                    <label class="form-check-label langWrapper" [for]="'learn-' + lang"><img [src]="'/images/' + lang + '.svg'" class="lang-flag">{{getLanguageName(lang)}}</label>
+                </div>
+            </ng-template>
+          </div>
+          <div class="col-3">
+            <button type="button" class="btn btn-sm" (click)="!editedFields.includes('learn') ? handleEdit('learn') : handleCancel('learn')">
+                <i [class]="!editedFields.includes('learn') ? 'bi bi-pencil-fill' : 'bi bi-x-circle-fill'"></i>
+            </button>
+          </div>
+      </div>
+
+      <div class="row mb-2">
+        <p class="col-4 fw-bold">Professional Profile</p>
+        <div class="form-check form-switch col">
+          <input class="form-check-input" type="checkbox" id="professional" name="professional" [checked]="user?.professional">
+          <label class="form-check-label" for="professional"><small>I want to offer paid classes and educational content.
+          </small></label>
+          <input type="hidden" name="stripeAccountId" [value]="user?.stripeAccountId">
+        </div>
+      </div>
+      
+      <div class="row mb-2">
+        <p class="col-4 fw-bold">Private Profile</p>
+        <div class="form-check form-switch col">
+          <input class="form-check-input" type="checkbox" id="private" name="private" [checked]="user?.private">
+          <label class="form-check-label" for="private"><small>Your profile will not appear in search results.<br>
+            Only users who you've contacted can see your profile.
+          </small></label>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-center mt-3">
+        <button type="submit" class="btn btn-primary rounded-pill"><i class="bi bi-floppy2-fill me-2"></i>Save Changes</button>
+      </div>
+    </form>
+
+    <div class="d-flex justify-content-center mt-3">
+      <a href="/account/profile/delete"><button class="btn btn-sm btn-outline-danger">Delete Account</button></a>
+    </div>
+    
+</div>

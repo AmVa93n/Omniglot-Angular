@@ -3,8 +3,6 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fileUploader = require("../config/cloudinary.config.js");
-const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
@@ -17,7 +15,6 @@ const saltRounds = 10;
 
 // POST /auth/signup  - Creates a new user in the database
 router.post("/signup", fileUploader.single("profilePic"), async (req, res, next) => {
-  console.log(req.body)
   const { email, password, username, gender, birthdate, country, lang_teach, lang_learn, professional, private } = req.body;
   const profilePic = req.file ? req.file.path : null
   const isPrivate = !!private
@@ -94,10 +91,10 @@ router.post("/login", async (req, res, next) => {
 
     if (passwordCorrect) {
       // Deconstruct the user object to omit the password
-      const { _id, email, name, profilePic, professional } = foundUser;
+      const { _id, email, username, profilePic, professional } = foundUser;
 
       // Create an object that will be set as the token payload
-      const payload = { _id, email, name, profilePic, professional };
+      const payload = { _id, email, username, profilePic, professional };
 
       // Create a JSON Web Token and sign it
       const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
