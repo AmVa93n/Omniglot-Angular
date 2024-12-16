@@ -35,4 +35,9 @@ export class AccountService {
     const response: AxiosResponse = await this.api.delete('/account/profile');
     return response.data;
   }
+
+  async getClasses(): Promise<any> {
+    const response: AxiosResponse = await this.api.get('/account/classes');
+    return response.data;
+  }
 }

@@ -1,0 +1,158 @@
+<h3 class="center my-3">My Booked Classes</h3>
+
+<div class="hr-with-text">
+    <span>Upcoming</span>
+</div>
+
+<div class="d-flex justify-content-center flex-wrap px-auto" style="width: 100%;">
+    <div *ngFor="let cls of classes.upcomingClasses" class="card offer-card text-left mx-3 mb-4">
+        <h5 class="card-header center"><span class="fs-6 date">{{cls.date}}</span><br>{{cls.timeslot}}</h5>
+
+        <div *ngIf="cls.reschedule.status === 'pending'" class="p-1 bg-warning">
+            <p class="center m-0">Pending reschedule request</p>
+            <h6 class="center"><span class="date">{{cls.reschedule.new_date}}</span>, {{cls.reschedule.new_timeslot}}</h6>
+            <div *ngIf="cls.reschedule.initiator !== user._id" class="d-flex justify-content-center">
+                <a href="/account/classes/{{cls._id}}/reschedule/accept" class="btn btn-sm btn-success mx-1" style="font-size: smaller;"><i class="bi bi-check-circle-fill me-2"></i>Accept</a>
+                <a href="/account/classes/{{cls._id}}/reschedule/decline" class="btn btn-sm btn-danger mx-1" style="font-size: smaller;"><i class="bi bi-x-circle-fill me-2"></i>Decline</a>
+            </div>
+        </div>
+    
+        <div class="card-body">
+            <a href="/users/{{cls.teacher._id}}" class="link-text">
+            <div class="d-flex align-items-center mb-2">
+                <div class="circle-crop me-2" style="width:50px;height:50px;display:inline-flex">
+                    <img [src]="cls.teacher.profilePic || '/images/Profile-PNG-File.png'">
+                </div>
+                <span class="fs-5">{{cls.teacher.username}}</span>
+            </div></a>
+
+            <div class="row mb-2">
+                <span class="card-text col"> 
+                    <div class="langWrapper">
+                        <img src="/images/{{cls.language}}.svg" class="lang-flag">
+                        <span class="lang-name">{{getLanguageName(cls.language)}}</span>
+                    </div>
+                </span>
+                <span class="card-text col addedIconWrapper">
+                    <i [class]="'bi ' + getIcon(cls.level)"></i>{{stylizeText(cls.level)}}
+                </span>
+            </div>
+
+            <div class="row mb-2">
+                <span class="card-text col addedIconWrapper">
+                    <i [class]="'bi ' + getIcon(cls.locationType)"></i>{{stylizeText(cls.locationType)}}
+                </span>
+                <span *ngIf="cls.location">({{cls.location}})</span>
+            </div>
+
+            <div class="row mb-2">
+                <span class="card-text col">
+                    <span class="addedIconWrapper">
+                        <i [class]="'bi ' + getIcon(cls.classType)"></i>{{stylizeText(cls.classType)}}
+                    </span>
+                    <span *ngIf="cls.maxGroupSize">(max. {{cls.maxGroupSize}} students)</span>
+                </span>
+            </div>
+
+            <div class="row mb-2">
+                <span class="card-text col"><i class="bi bi-clock-fill me-2"></i>{{cls.duration}} Minutes</span>
+            </div>
+
+            <div class="d-flex justify-content-center mt-3">
+                <button class="btn btn-sm btn-secondary mx-1" (click)="pickNewDate('cls._id','cls.date','cls.timeslot')" data-bs-toggle="modal" data-bs-target="#exampleModal" [disabled]="cls.reschedule.status === 'pending'"
+                ><i class="bi bi-calendar2-x-fill me-2"></i>Reschedule</button>
+                <a href="/account/classes/{{cls._id}}/cancel" class="btn btn-sm btn-danger mx-1"><i class="bi bi-x-circle-fill me-2"></i>Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="hr-with-text">
+    <span>Past</span>
+</div>
+
+<div class="d-flex justify-content-center flex-wrap px-auto" style="width: 100%;">
+    <div *ngFor="let cls of classes.pastClasses" class="card offer-card text-left mx-3 mb-4">
+        <h5 class="card-header center"><span class="fs-6 date">{{formatDate(cls.date)}}</span><br>{{cls.timeslot}}</h5>
+        <div class="card-body">
+            <a href="/users/{{cls.teacher._id}}" class="link-text">
+            <div class="d-flex align-items-center mb-2">
+                <div class="circle-crop me-2" style="width:50px;height:50px;display:inline-flex">
+                    <img [src]="cls.teacher.profilePic || '/images/Profile-PNG-File.png'">
+                </div>
+                <span class="fs-5">{{cls.teacher.username}}</span>
+            </div></a>
+
+            <div class="row mb-2">
+                <span class="card-text col"> 
+                    <div class="langWrapper">
+                        <img src="/images/{{cls.language}}.svg" class="lang-flag">
+                        <span class="lang-name">{{getLanguageName(cls.language)}}</span>
+                    </div>
+                </span>
+                <span class="card-text col addedIconWrapper">
+                    <i [class]="'bi ' + getIcon(cls.level)"></i>{{stylizeText(cls.level)}}
+                </span>
+            </div>
+
+            <div class="row mb-2">
+                <span class="card-text col addedIconWrapper">
+                    <i [class]="'bi ' + getIcon(cls.locationType)"></i>{{stylizeText(cls.locationType)}}
+                </span>
+                <span *ngIf="cls.location">({{cls.location}})</span>
+            </div>
+
+            <div class="row mb-2">
+                <span class="card-text col">
+                    <span class="addedIconWrapper">
+                        <i [class]="'bi ' + getIcon(cls.classType)"></i>{{stylizeText(cls.classType)}}
+                    </span>
+                    <span *ngIf="cls.maxGroupSize">(max. {{cls.maxGroupSize}} students)</span>
+                </span>
+            </div>
+
+            <div class="row mb-2">
+                <span class="card-text col"><i class="bi bi-clock-fill me-2"></i>{{cls.duration}} Minutes</span>
+            </div>
+
+            <div class="d-flex justify-content-center mt-3">
+                <button *ngIf="cls.isRated" class="btn btn-warning mx-1" disabled><i class="bi bi-check-circle-fill me-2"></i>Rated</button>
+                <a *ngIf="!cls.isRated" href="/account/classes/{{cls._id}}/rate" class="btn btn-warning mx-1"><i class="bi bi-star-fill me-2"></i>Rate</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Send a reschedule request</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <form action="" method="POST" id="reschedule">
+          <div class="container mb-3">
+              <div class="form-group">
+                  <label for="datepicker">Choose a new date</label>
+                  <input type="text" id="datepicker" class="form-control" placeholder="Choose a date" name="date" required>
+              </div>
+          </div>
+          <div class="container mb-4">
+              <label for="timeslot">Choose a new time slot</label>
+              <select class="form-select" id="timeslots" name="timeslot"> 
+                <option *ngFor="let timeslot of timeslots" [value]="timeslot">{{timeslot}}</option>
+              </select>
+          </div>
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary mx-1">Send Request</button>
+            <button type="button" class="btn btn-secondary mx-1" data-bs-dismiss="modal">Close</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>

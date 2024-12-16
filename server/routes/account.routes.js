@@ -202,19 +202,23 @@ router.get('/offers/:offerId/delete', isAuthenticated, async (req, res) => {
 // CLASSES
 //================//
 
-router.get('/classes', isAuthenticated, async (req, res) => {
-    const user = req.session.currentUser
-    const classes = await Class.find({ student: user._id }).populate('teacher')
-    const upcomingClasses = []
-    const pastClasses = []
-    for (let cl of classes) {
-      const [year, month, day] = cl.date.split('-').map(Number);
-      const inputDate = new Date(year, month - 1, day);
-      const currentDate = new Date();
-      if (inputDate < currentDate) pastClasses.push(cl)
-      else upcomingClasses.push(cl)
+router.get('/classes', isAuthenticated, async (req, res, next) => {
+    const userId = req.payload._id
+    try {
+      const classes = await Class.find({ student: userId }).populate('teacher')
+      const upcomingClasses = []
+      const pastClasses = []
+      for (let cl of classes) {
+        const [year, month, day] = cl.date.split('-').map(Number);
+        const inputDate = new Date(year, month - 1, day);
+        const currentDate = new Date();
+        if (inputDate < currentDate) pastClasses.push(cl)
+        else upcomingClasses.push(cl)
+      }
+      res.status(200).json({upcomingClasses, pastClasses});
+    } catch (error) {
+      next(err);
     }
-    res.render('account/classes/classes', {user, upcomingClasses, pastClasses})
 });
 
 router.get('/classes/:classId/rate', isAuthenticated, async (req, res) => {

@@ -96,6 +96,14 @@ function drawStars(stars: number) {
   return string
 }
 
+// convert 'yyyy/mm/dd' dates to 'dd/mm/yyyy' format
+function flipDayAndYear(date: Date) {
+  var day = ('0' + date.getDate()).slice(-2);
+  var month = ('0' + (date.getMonth() + 1)).slice(-2);
+  var year = date.getFullYear();
+  return day + '-' + month + '-' + year;
+}
+
 export {
   getLanguageName,
   langList,
@@ -103,7 +111,8 @@ export {
   stylizeText,
   getIcon,
   formatDate,
-  drawStars
+  drawStars,
+  flipDayAndYear
 }
 
 /*
@@ -112,18 +121,6 @@ function getLanguageCode(langName: string) {
       if (langList[code] == langName) return code;
     }
 }
-  
-
-  
-  // convert 'yyyy/mm/dd' dates to 'dd/mm/yyyy' format
-function flipDayAndYear(date: Date) {
-    var day = ('0' + date.getDate()).slice(-2);
-    var month = ('0' + (date.getMonth() + 1)).slice(-2);
-    var year = date.getFullYear();
-    return day + '-' + month + '-' + year;
-}
-  
-
   
 function getMsgTime(timestamp: string) {
     const date = new Date(timestamp); // Parse the timestamp into a Date object
@@ -137,9 +134,5 @@ function getMsgDate(timestamp: string) {
     const month = months[date.getMonth()]
     return day + " " + month
 }
-  
-
-  
-
   
 */
